@@ -1,2 +1,2 @@
-# SchedulerSimulater
-Tool to validate scheduler timing 
+# SchedulerSimulator
+Tool to validate scheduler timing based on task definition
