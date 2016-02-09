@@ -10,8 +10,11 @@ class PreemptiveScheduler:
         self.tasklist = tasklist
         self.ticks = ticks
 
+    def taskReady(self, t):
+        return t.state == TaskState.READY or t.state == TaskState.RUNNING
+
     def findHighestReady(self):
-        ready_list = filter(lambda x: x.state == TaskState.READY, self.tasklist)
+        ready_list = filter(self.taskReady, self.tasklist)
         if len(ready_list) == 0:
             return None
         ready_list[0].state = TaskState.RUNNING
@@ -19,21 +22,20 @@ class PreemptiveScheduler:
 
     def execute(self):
         action_list = []
-        currentTask = self.findHighestReady()
         for i in range(0, self.ticks):
+            currentTask = self.findHighestReady()
             if currentTask is None:
-                print 'Doing nothing'
+                # print 'Doing nothing'
                 action_list.append(0)
             else:
-                print 'Executing: {}'.format(currentTask)
+                # print 'Executing: {}'.format(currentTask)
                 action_list.append(currentTask.index)
 
             # Step every task
             map(lambda x: x.step(), self.tasklist)
-            if currentTask is None or currentTask.state != TaskState.RUNNING:
-                currentTask = self.findHighestReady()
 
         return action_list
+
 
 class Unittest(unittest.TestCase):
 
