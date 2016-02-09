@@ -24,23 +24,29 @@ class Task:
 
     def incrementSleep(self):
         self.sleep_count = (self.sleep_count + 1) % (self.sleep_time)
-        self.state_list.append(self.index)
+        # self.state_list.append(self.index)
         if self.sleep_count == 0:
             self.state = TaskState.READY
 
     def incrementRunning(self):
         self.run_count = (self.run_count + 1) % (self.exec_time)
-        self.state_list.append(self.index + 1)
+        # self.state_list.append(self.index + 1)
         if self.run_count == 0:
             self.state = TaskState.SLEEPING
 
     def step(self):
-        if self.state == TaskState.READY:
-            raise RuntimeError('State must be SLEEPING or READY')
-        if self.state == TaskState.SLEEPING:
+        if self.state == TaskState.SLEEPING or \
+           self.state == TaskState.READY:
             self.incrementSleep()
         if self.state == TaskState.RUNNING:
             self.incrementRunning()
+
+    def __str__(self):
+        return '{} - {} : priority {} ({},{})'.format(self.index,
+                                                      self.name,
+                                                      self.priority,
+                                                      self.run_count,
+                                                      self.sleep_count)
 
 
 class Unittest(unittest.TestCase):
@@ -48,7 +54,6 @@ class Unittest(unittest.TestCase):
     def test_initialState(self):
         t = Task(1, 'test', 1, 2, 2)
         self.assertEqual(t.state, TaskState.READY)
-        self.assertRaises(RuntimeError, t.step)
 
     def test_runStep(self):
         t = Task(1, 'test', 1, 2, 2)
@@ -60,7 +65,7 @@ class Unittest(unittest.TestCase):
         self.assertEqual(t.run_count, 0)
         self.assertEqual(t.state, TaskState.SLEEPING)
 
-        self.assertEqual(t.state_list, [2, 2])
+        # self.assertEqual(t.state_list, [2, 2])
 
     def test_sleepStep(self):
         t = Task(1, 'test', 1, 2, 2)
@@ -72,7 +77,7 @@ class Unittest(unittest.TestCase):
         self.assertEqual(t.sleep_count, 0)
         self.assertEqual(t.state, TaskState.READY)
 
-        self.assertEqual(t.state_list, [1, 1])
+        # self.assertEqual(t.state_list, [1, 1])
 
     def test_transitions(self):
         t = Task(1, 'test', 1, 2, 2)
@@ -84,7 +89,7 @@ class Unittest(unittest.TestCase):
         t.step()
         self.assertEqual(t.state, TaskState.READY)
 
-        self.assertEqual(t.state_list, [2, 2, 1, 1])
+        # self.assertEqual(t.state_list, [2, 2, 1, 1])
 
 
 if __name__ == '__main__':
